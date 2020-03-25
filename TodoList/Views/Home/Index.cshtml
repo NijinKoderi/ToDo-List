@@ -1,0 +1,261 @@
+﻿@{
+    Layout = "~/Views/Shared/MasterLayout.cshtml";
+}
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css" />
+
+<style>
+    .Completedtask {
+        background-color: #bbf9bb;
+        color: black;
+    }
+
+    td.highlight {
+        background-color: whitesmoke !important;
+    }
+</style>
+
+<section>
+    <div class="container-fluid">
+        <header>
+            <h1 class="h3">List of Tasks</h1>
+        </header>
+        <div class="card">
+            <div class="card-body">
+                <div class="form-group">
+                    <button class="btn btn-primary" onclick="TaskDetails('', 'NEW');">Add Task</button>
+                </div>
+                <div class="table-responsive">
+                    <table id="Taskdatatable" style="width: 100%;" class="table">
+                        <thead>
+                            <tr>
+                                <th width="10%">Sl.No</th>
+                                <th width="40%">Task Name</th>
+                                <th width="15%">Task Date</th>
+                                <th width="15%">Created Date</th>
+                                <th width="5%">Edit</th>
+                                <th width="5%">Delete</th>
+                                <th width="10%">Mark As Completed</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+<div id="ModalTask" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Task Details</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form name="frmtask" id="frmtask" autocomplete="off">
+                    <input type="hidden" name="TaskID" id="TaskID" value="0" />
+                    <input type="hidden" name="TaskStatus" id="TaskStatus" value="0" />
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <label>Title</label>
+                            <input type="text" name="TaskTitle" class="form-control validate[required]" id="TaskTitle" placeholder="Enter Title" />
+                        </div>
+
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <label>Date</label>
+
+                            <div class="form-group">
+                                <div class='input-group date'>
+                                    <input type='text' class="form-control datepicker validate[required]" id="TaskDate" name="TaskDate" data-date-format="dd-M-yyyy" placeholder="Choose Date" />
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="inputGroupPrepend"><span class="fa fa-calendar"></span></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="Submit();">Submit</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+<script>
+    var table;
+    $(document).ready(function () {
+        var t = $("#Taskdatatable").DataTable({
+            "ajax": {
+                "url": "/Task/LoadTaskDetails",
+                "type": "POST",
+                "datatype": "json"
+            },
+            "columns":
+            [
+                { "data": null },
+                { "data": "TaskName" },
+                { "data": "TaskDate" },
+                { "data": "CreatedDate" },
+                {
+                    "data": null,
+                    render: function (data, type, row) {
+                        if (data.IsCompleted == false) {
+                            return "<button id='btnEdit' class=' btn-primary btnEdit'><i class='fa fa-pencil'></i></button>"
+                        }
+                        else {
+                            return "<button id='btnEdit' disabled class=' btn-primary btnEdit'><i class='fa fa-pencil'></i></button>";
+                        }
+                    }
+                },
+                {
+                    "data": null,
+                    "defaultContent": "<button id='btnDelete'  class=' btn-danger btnDelete'><i class='fa fa-trash'></i></button>"
+                },
+
+                {
+                    "data": null,
+                    render: function (data, type, row) {
+                        if (data.IsCompleted == false) {
+                            return "<input type='checkbox' class='regular-checkbox' id='chkstatus'/>"
+                        }
+                        else {
+                            return "<input type='checkbox' disabled checked class='regular-checkbox' id='chkstatus'/>";
+                        }
+                    }
+                }
+            ],
+
+            "fnRowCallback": function (nRow, aData, iDisplayIndex) {
+                if (aData.IsCompleted == true) {
+                    $('td', nRow).addClass("Completedtask");
+                }
+                $("td:first", nRow).html(iDisplayIndex + 1);
+                return nRow;
+            }
+        });
+    });
+
+
+    $('body').on('click', '.btnEdit', function () {
+        var row = $(this).parents('tr')[0];
+        var selected_item = $('#Taskdatatable').DataTable().row(row).data();
+        $("#TaskID").val(selected_item.TaskID);
+        $("#TaskTitle").val(selected_item.TaskName);
+        $("#TaskDate").val(moment(selected_item.TaskDate).format('D-MMM-YYYY'));
+        TaskDetails("EDIT");
+    });
+
+    $('body').on('click', '.btnDelete', function () {
+        var row = $(this).parents('tr')[0];
+        var selected_item = $('#Taskdatatable').DataTable().row(row).data();
+        $("#TaskID").val(selected_item.TaskID);
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You Want to delete this item?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, Update!',
+            cancelButtonText: 'No, cancel!',
+        })
+            .then((result) => {
+                if (result.value) {
+
+                    Swal.fire('Deleted!', 'Item Deleted Successfully!', 'success')
+                        .then(function () {
+                            $.post('/Task/DeleteTaskDetails',
+                                $.param([{ name: "TaskID", value: $("#TaskID").val() }]),
+                                function (Resp) {
+                                    window.location.reload();
+                                });
+                        })
+                }
+            });
+    });
+
+
+    $('body').on('click', '#chkstatus', function (e) {
+        var row = $(this).parents('tr')[0];
+        var selected_item = $('#Taskdatatable').DataTable().row(row).data();
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to Edit this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, Update!'
+        }).then((result) => {
+            if (result.value) {
+
+                $.post('/Task/MarkAsCompleted',
+                    $.param([{ name: "TaskID", value: selected_item.TaskID }, { name: "Status", value: 1 }]),
+                    function (Resp) {
+                        window.location.reload();
+                    });
+
+                Swal.fire(
+                    'Updated!',
+                    'Your task has been updated.',
+                    'success'
+                )
+            }
+            window.location.reload();
+        })
+    });
+
+</script>
+<script>
+    function Submit() {
+
+        if ($("#frmtask").validationEngine('validate')) {
+            $.post('/Task/SaveTaskDetails',
+                $.param([{ name: "TaskID", value: $("#TaskID").val() }, { name: "TaskTitle", value: $("#TaskTitle").val() }, { name: "TaskDate", value: $("#TaskDate").val() }, { name: "TaskStatus", value: $("#TaskStatus").val() }]),
+                function (Resp) {
+                    if (Resp == "1") {
+                        Swal.fire(
+                            'Good job!',
+                            'Task Successfully Saved!',
+                            'success'
+                        ).then(function () {
+                            location.reload();
+                        });
+                    }
+                    else {
+                        Swal.fire(
+                            'Sorry !',
+                            'Error Occured During the process!',
+                            'danger'
+                        )
+                    }
+                });
+        }
+    }
+
+    function TaskDetails(ViewMode) {
+
+        $('#TaskDate').datepicker({
+            format: 'dd-M-yyyy',
+        });
+
+        if (ViewMode == "NEW") {
+            $("#TaskDate").val(moment().format('D-MMM-YYYY'));
+        }
+        $("#ModalTask").modal('show');
+    }
+
+</script>

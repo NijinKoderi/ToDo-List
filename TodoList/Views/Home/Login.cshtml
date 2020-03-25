@@ -1,0 +1,79 @@
+﻿
+@model TodoList.Models.Login 
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Login |ToDo List</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="all,follow">
+    <link rel="stylesheet" href="~/Assets/vendor/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/Assets/vendor/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="~/Assets/css/fontastic.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+    <link rel="stylesheet" href="~/Assets/css/grasp_mobile_progress_circle-1.0.0.min.css">
+    <link rel="stylesheet" href="~/Assets/vendor/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css">
+    <link rel="stylesheet" href="~/Assets/css/style.default.premium.css" id="theme-stylesheet">
+    <link rel="stylesheet" href="~/Assets/css/custom.css">
+    <link rel="shortcut icon" href="~/Assets/img/icon.png">
+    <link href="~/Assets/css/validation.css" rel="stylesheet" />
+
+</head>
+<body>
+    <div class="page login-page">
+        <div class="container">
+            <div class="form-outer text-center d-flex align-items-center">
+                <div class="form-inner">
+                    @*<div class="logo text-uppercase"><span>Bootstrap</span><strong class="text-primary">Dashboard</strong></div>*@
+                    <div class="logo" style="width: 380px;">
+                        <img src="~/Assets/img/icon.png" />
+                    </div>
+                    <p>Login to start your session</p>
+                    @using (Html.BeginForm("CheckLogin", "Home", FormMethod.Post, new { enctype = "multipart/form-data", name = "frmlogin", id = "frmlogin" }))
+                    {
+                        <div class="form-group-material">
+                            <input type="text" name="UserName" id="UserName" autocomplete="off" data-msg="Please enter your username" class="input-material validate[required,custom[email]]">
+                            <label for="UserName" class="label-material">Username</label>
+                        </div>
+                        <div class="form-group-material">
+                            <input id="Password" type="password" name="Password" autocomplete="off" data-msg="Please enter your password" class="input-material validate[required]">
+                            <label for="Password" class="label-material">Password</label>
+                        </div>
+                        <div class="form-group text-center">
+                            <button type="submit" class="btn btn-primary"><i class="fa fa-sign-in"></i>&nbsp;&nbsp; Login</button>
+                        </div>
+                    }
+                        <small>Do not have an account? </small><a href="/Home/Signup" class="signup">Signup</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- JavaScript files-->
+    <script src="~/Assets/vendor/jquery/jquery.min.js"></script>
+    <script src="~/Assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/Assets/js/grasp_mobile_progress_circle-1.0.0.min.js"></script>
+    <script src="~/Assets/vendor/jquery.cookie/jquery.cookie.js"> </script>
+    <script src="~/Assets/vendor/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js"></script>
+    <!-- Main File-->
+    <script src="~/Assets/js/front.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+    <script src="~/Assets/js/jquery.validationEngine.js"></script>
+    <script src="~/Assets/js/jquery.validationEngine-en.js"></script>
+</body>
+</html>
+
+<script>
+    $("#frmlogin").submit(function (event) {
+        if ($("#frmlogin").validationEngine('validate')) {
+        }
+        else {
+            event.preventDefault();
+        }
+    });
+
+    $(document).ready(function(){
+        alert('@ViewBag.msg')
+    });
+</script>

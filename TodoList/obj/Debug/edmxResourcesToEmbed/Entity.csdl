@@ -1,0 +1,178 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="ToDoListModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="sysdiagram">
+    <Key>
+      <PropertyRef Name="diagram_id" />
+    </Key>
+    <Property Name="name" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="principal_id" Type="Int32" Nullable="false" />
+    <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="version" Type="Int32" />
+    <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
+  </EntityType>
+  <EntityType Name="tblEmployee">
+    <Key>
+      <PropertyRef Name="EmployeeID" />
+    </Key>
+    <Property Name="EmployeeID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="EmployeeName" Type="String" MaxLength="300" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="CreatedOn" Type="DateTime" Nullable="false" Precision="0" />
+    <NavigationProperty Name="tblLogins" Relationship="Self.FK_tblLogin_tblEmployee" FromRole="tblEmployee" ToRole="tblLogin" />
+    <NavigationProperty Name="tblTasks" Relationship="ToDoListModel.FK_tbltask_tblEmployee" FromRole="tblEmployee" ToRole="tblTask" />
+    <NavigationProperty Name="tblTasks1" Relationship="ToDoListModel.FK_tbltask_tblEmployee1" FromRole="tblEmployee" ToRole="tblTask" />
+  </EntityType>
+  <EntityType Name="tblLogin">
+    <Key>
+      <PropertyRef Name="LoginID" />
+    </Key>
+    <Property Name="LoginID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="EmployeeID" Type="Int64" Nullable="false" />
+    <Property Name="UserName" Type="String" MaxLength="300" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="Password" Type="String" MaxLength="300" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="IsActive" Type="Boolean" Nullable="false" />
+    <NavigationProperty Name="tblEmployee" Relationship="Self.FK_tblLogin_tblEmployee" FromRole="tblLogin" ToRole="tblEmployee" />
+  </EntityType>
+  <Association Name="FK_tblLogin_tblEmployee">
+    <End Role="tblEmployee" Type="Self.tblEmployee" Multiplicity="1" />
+    <End Role="tblLogin" Type="Self.tblLogin" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tblEmployee">
+        <PropertyRef Name="EmployeeID" />
+      </Principal>
+      <Dependent Role="tblLogin">
+        <PropertyRef Name="EmployeeID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="ToDoListEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagram" />
+    <EntitySet Name="tblEmployees" EntityType="Self.tblEmployee" />
+    <EntitySet Name="tblLogins" EntityType="Self.tblLogin" />
+    <AssociationSet Name="FK_tblLogin_tblEmployee" Association="Self.FK_tblLogin_tblEmployee">
+      <End Role="tblEmployee" EntitySet="tblEmployees" />
+      <End Role="tblLogin" EntitySet="tblLogins" />
+    </AssociationSet>
+    <FunctionImport Name="sp_alterdiagram">
+      <Parameter Name="diagramname" Mode="In" Type="String" />
+      <Parameter Name="owner_id" Mode="In" Type="Int32" />
+      <Parameter Name="version" Mode="In" Type="Int32" />
+      <Parameter Name="definition" Mode="In" Type="Binary" />
+    </FunctionImport>
+    <FunctionImport Name="sp_creatediagram">
+      <Parameter Name="diagramname" Mode="In" Type="String" />
+      <Parameter Name="owner_id" Mode="In" Type="Int32" />
+      <Parameter Name="version" Mode="In" Type="Int32" />
+      <Parameter Name="definition" Mode="In" Type="Binary" />
+    </FunctionImport>
+    <FunctionImport Name="sp_dropdiagram">
+      <Parameter Name="diagramname" Mode="In" Type="String" />
+      <Parameter Name="owner_id" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="sp_helpdiagramdefinition" ReturnType="Collection(ToDoListModel.sp_helpdiagramdefinition_Result)">
+      <Parameter Name="diagramname" Mode="In" Type="String" />
+      <Parameter Name="owner_id" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="sp_helpdiagrams" ReturnType="Collection(ToDoListModel.sp_helpdiagrams_Result)">
+      <Parameter Name="diagramname" Mode="In" Type="String" />
+      <Parameter Name="owner_id" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="sp_renamediagram">
+      <Parameter Name="diagramname" Mode="In" Type="String" />
+      <Parameter Name="owner_id" Mode="In" Type="Int32" />
+      <Parameter Name="new_diagramname" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="sp_upgraddiagrams" />
+    <EntitySet Name="tblTasks" EntityType="ToDoListModel.tblTask" />
+    <AssociationSet Name="FK_tbltask_tblEmployee" Association="ToDoListModel.FK_tbltask_tblEmployee">
+      <End Role="tblEmployee" EntitySet="tblEmployees" />
+      <End Role="tblTask" EntitySet="tblTasks" />
+    </AssociationSet>
+    <AssociationSet Name="FK_tbltask_tblEmployee1" Association="ToDoListModel.FK_tbltask_tblEmployee1">
+      <End Role="tblEmployee" EntitySet="tblEmployees" />
+      <End Role="tblTask" EntitySet="tblTasks" />
+    </AssociationSet>
+    <FunctionImport Name="spTaskDetailSel" ReturnType="Collection(ToDoListModel.spTaskDetailSel_Result)">
+      <Parameter Name="LoginUserID" Mode="In" Type="Int64" />
+      <Parameter Name="TaskID" Mode="In" Type="Int64" />
+    </FunctionImport>
+    <FunctionImport Name="spCheckLogin" ReturnType="Collection(ToDoListModel.spCheckLogin_Result1)">
+      <Parameter Name="LoginID" Mode="In" Type="String" />
+      <Parameter Name="Password" Mode="In" Type="String" />
+    </FunctionImport>
+  </EntityContainer>
+  <ComplexType Name="sp_helpdiagramdefinition_Result">
+    <Property Type="Int32" Name="version" Nullable="true" />
+    <Property Type="Binary" Name="definition" Nullable="true" />
+  </ComplexType>
+  <ComplexType Name="sp_helpdiagrams_Result">
+    <Property Type="String" Name="Database" Nullable="true" MaxLength="128" />
+    <Property Type="String" Name="Name" Nullable="false" MaxLength="128" />
+    <Property Type="Int32" Name="ID" Nullable="false" />
+    <Property Type="String" Name="Owner" Nullable="true" MaxLength="128" />
+    <Property Type="Int32" Name="OwnerID" Nullable="false" />
+  </ComplexType>
+  <ComplexType Name="spCheckLogin_Result">
+    <Property Type="String" Name="EmployeeName" Nullable="true" MaxLength="300" />
+    <Property Type="Int64" Name="LoginID" Nullable="false" />
+    <Property Type="Int64" Name="EmployeeID" Nullable="false" />
+    <Property Type="String" Name="UserName" Nullable="false" MaxLength="300" />
+    <Property Type="String" Name="Password" Nullable="false" MaxLength="300" />
+    <Property Type="Boolean" Name="IsActive" Nullable="false" />
+  </ComplexType>
+  <EntityType Name="tblTask">
+    <Key>
+      <PropertyRef Name="TaskID" />
+    </Key>
+    <Property Name="TaskID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="TaskName" Type="String" Nullable="false" MaxLength="300" FixedLength="false" Unicode="false" />
+    <Property Name="TaskDescription" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+    <Property Name="TaskDate" Type="DateTime" Precision="0" />
+    <Property Name="CreatedBy" Type="Int64" />
+    <Property Name="CreatedDate" Type="DateTime" Precision="0" />
+    <Property Name="ModifiedBy" Type="Int64" />
+    <Property Name="ModifiedDate" Type="DateTime" Precision="0" />
+    <NavigationProperty Name="tblEmployee" Relationship="ToDoListModel.FK_tbltask_tblEmployee" FromRole="tblTask" ToRole="tblEmployee" />
+    <NavigationProperty Name="tblEmployee1" Relationship="ToDoListModel.FK_tbltask_tblEmployee1" FromRole="tblTask" ToRole="tblEmployee" />
+    <Property Name="IsCompleted" Type="Boolean" />
+  </EntityType>
+  <Association Name="FK_tbltask_tblEmployee">
+    <End Type="ToDoListModel.tblEmployee" Role="tblEmployee" Multiplicity="0..1" />
+    <End Type="ToDoListModel.tblTask" Role="tblTask" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tblEmployee">
+        <PropertyRef Name="EmployeeID" />
+      </Principal>
+      <Dependent Role="tblTask">
+        <PropertyRef Name="CreatedBy" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_tbltask_tblEmployee1">
+    <End Type="ToDoListModel.tblEmployee" Role="tblEmployee" Multiplicity="0..1" />
+    <End Type="ToDoListModel.tblTask" Role="tblTask" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tblEmployee">
+        <PropertyRef Name="EmployeeID" />
+      </Principal>
+      <Dependent Role="tblTask">
+        <PropertyRef Name="ModifiedBy" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <ComplexType Name="spTaskDetailSel_Result">
+    <Property Type="Int64" Name="TaskID" Nullable="false" />
+    <Property Type="String" Name="TaskName" Nullable="false" MaxLength="300" />
+    <Property Type="String" Name="TaskDate" Nullable="true" MaxLength="30" />
+    <Property Type="Int64" Name="CreatedBy" Nullable="true" />
+    <Property Type="String" Name="CreatedDate" Nullable="true" MaxLength="30" />
+    <Property Type="Boolean" Name="IsCompleted" Nullable="false" />
+  </ComplexType>
+  <ComplexType Name="spCheckLogin_Result1">
+    <Property Type="String" Name="EmployeeName" Nullable="true" MaxLength="300" />
+    <Property Type="Int64" Name="LoginID" Nullable="false" />
+    <Property Type="Int64" Name="EmployeeID" Nullable="false" />
+    <Property Type="String" Name="UserName" Nullable="false" MaxLength="300" />
+    <Property Type="String" Name="Password" Nullable="false" MaxLength="300" />
+    <Property Type="Boolean" Name="IsActive" Nullable="false" />
+  </ComplexType>
+</Schema>

@@ -1,0 +1,110 @@
+﻿
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Home |ToDo List</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="all,follow">
+    <!-- Bootstrap CSS-->
+    <link rel="stylesheet" href="~/Assets/vendor/bootstrap/css/bootstrap.min.css">
+    <!-- Font Awesome CSS-->
+    <link rel="stylesheet" href="~/Assets/vendor/font-awesome/css/font-awesome.min.css">
+    <!-- Fontastic Custom icon font-->
+    <link rel="stylesheet" href="~/Assets/css/fontastic.css">
+    <!-- Google fonts - Roboto -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+    <!-- jQuery Circle-->
+    <link rel="stylesheet" href="~/Assets/css/grasp_mobile_progress_circle-1.0.0.min.css">
+    <!-- Custom Scrollbar-->
+    <link rel="stylesheet" href="~/Assets/vendor/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css">
+    <!-- theme stylesheet-->
+    <link rel="stylesheet" href="~/Assets/css/style.default.premium.css" id="theme-stylesheet">
+    <!-- Custom stylesheet - for your changes-->
+    <link rel="stylesheet" href="~/Assets/css/custom.css">
+    <!-- Favicon-->
+    <link rel="shortcut icon" href="~/Assets/img/icon.png">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link href="~/Assets/css/datepicker3.css" rel="stylesheet" />
+    <link href="~/Assets/css/validation.css" rel="stylesheet" />
+    <script src="~/Assets/js/jquery.validationEngine-en.js"></script>
+    <script src="~/Assets/js/jquery.validationEngine.js"></script>
+    <script src="~/Assets/js/moment.min.js"></script>
+</head>
+<body>
+    <nav class="side-navbar">
+        <div class="side-navbar-wrapper">
+            <div class="sidenav-header d-flex align-items-center justify-content-center">
+                <div class="sidenav-header-inner text-center">
+                    <a href="pages-profile.html"><img src="~/Assets/img/user.png" alt="person" class="img-fluid rounded-circle"></a>
+                    <h2 class="h5">@Session["EmployeeName"]</h2><span></span>
+                </div>
+                <div class="sidenav-header-logo"><a href="#" class="brand-small text-center"> <strong>To</strong><strong class="text-primary">Do</strong></a></div>
+            </div>
+
+            <div class="main-menu">
+                <h5 class="sidenav-heading">Main</h5>
+                <ul id="side-main-menu" class="side-menu list-unstyled">
+                    <li><a href="/Home/Index"> <i class="icon-home"></i>Home</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="page">
+        <!-- navbar-->
+        <header class="header">
+            <nav class="navbar">
+                <div class="container-fluid">
+                    <div class="navbar-holder d-flex align-items-center justify-content-between">
+                        <div class="navbar-header">
+                            <a id="toggle-btn" href="#" class="menu-btn"><i class="fa fa-dashboard"> </i></a><a href="/Home/Index" class="navbar-brand">
+                                <div class="brand-text d-none d-md-inline-block"><strong class="text-primary">Dashboard</strong></div>
+                            </a>
+                        </div>
+                        <ul class="nav-menu list-unstyled d-flex flex-md-row align-items-md-center">
+                            <li class="nav-item"><a href="#" onclick="Logout();" class="nav-link logout"> <span class="d-none d-sm-inline-block">Logout</span><i class="fa fa-sign-out"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </header>
+        @RenderBody()
+    </div>
+    <!-- JavaScript files-->
+    <script src="~/Assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/Assets/vendor/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js"></script>
+    <script src="~/Assets/js/bootstrap-datepicker.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+
+
+</body>
+</html>
+
+<script>
+
+    function Logout() {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You need to login again!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, Logout'
+        }).then((result) => {
+            if (result.value) {
+                Swal.fire(
+                    'Logout!',
+                    'Your current session is completed.',
+                    'success'
+                ).then()
+                {
+                    window.location.href = "/Home/Logout";
+                }
+            }
+        })
+    }
+</script>

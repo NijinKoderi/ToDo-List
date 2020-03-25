@@ -1,0 +1,182 @@
+USE [master]
+GO
+/****** Object:  Database [ToDoList]    Script Date: 25-Mar-20 1:16:26 PM ******/
+CREATE DATABASE [ToDoList]
+ CONTAINMENT = NONE
+ ON  PRIMARY 
+( NAME = N'Nijintest', FILENAME = N'C:\Program Files\Microsoft SQL Server\2012\MSSQL11.MSSQLSERVER2012\MSSQL\DATA\Nijintest.mdf' , SIZE = 3072KB , MAXSIZE = UNLIMITED, FILEGROWTH = 1024KB )
+ LOG ON 
+( NAME = N'Nijintest_log', FILENAME = N'C:\Program Files\Microsoft SQL Server\2012\MSSQL11.MSSQLSERVER2012\MSSQL\DATA\Nijintest_log.ldf' , SIZE = 1024KB , MAXSIZE = 2048GB , FILEGROWTH = 10%)
+GO
+ALTER DATABASE [ToDoList] SET COMPATIBILITY_LEVEL = 110
+GO
+IF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))
+begin
+EXEC [ToDoList].[dbo].[sp_fulltext_database] @action = 'enable'
+end
+GO
+ALTER DATABASE [ToDoList] SET ANSI_NULL_DEFAULT OFF 
+GO
+ALTER DATABASE [ToDoList] SET ANSI_NULLS OFF 
+GO
+ALTER DATABASE [ToDoList] SET ANSI_PADDING OFF 
+GO
+ALTER DATABASE [ToDoList] SET ANSI_WARNINGS OFF 
+GO
+ALTER DATABASE [ToDoList] SET ARITHABORT OFF 
+GO
+ALTER DATABASE [ToDoList] SET AUTO_CLOSE OFF 
+GO
+ALTER DATABASE [ToDoList] SET AUTO_SHRINK OFF 
+GO
+ALTER DATABASE [ToDoList] SET AUTO_UPDATE_STATISTICS ON 
+GO
+ALTER DATABASE [ToDoList] SET CURSOR_CLOSE_ON_COMMIT OFF 
+GO
+ALTER DATABASE [ToDoList] SET CURSOR_DEFAULT  GLOBAL 
+GO
+ALTER DATABASE [ToDoList] SET CONCAT_NULL_YIELDS_NULL OFF 
+GO
+ALTER DATABASE [ToDoList] SET NUMERIC_ROUNDABORT OFF 
+GO
+ALTER DATABASE [ToDoList] SET QUOTED_IDENTIFIER OFF 
+GO
+ALTER DATABASE [ToDoList] SET RECURSIVE_TRIGGERS OFF 
+GO
+ALTER DATABASE [ToDoList] SET  DISABLE_BROKER 
+GO
+ALTER DATABASE [ToDoList] SET AUTO_UPDATE_STATISTICS_ASYNC OFF 
+GO
+ALTER DATABASE [ToDoList] SET DATE_CORRELATION_OPTIMIZATION OFF 
+GO
+ALTER DATABASE [ToDoList] SET TRUSTWORTHY OFF 
+GO
+ALTER DATABASE [ToDoList] SET ALLOW_SNAPSHOT_ISOLATION OFF 
+GO
+ALTER DATABASE [ToDoList] SET PARAMETERIZATION SIMPLE 
+GO
+ALTER DATABASE [ToDoList] SET READ_COMMITTED_SNAPSHOT OFF 
+GO
+ALTER DATABASE [ToDoList] SET HONOR_BROKER_PRIORITY OFF 
+GO
+ALTER DATABASE [ToDoList] SET RECOVERY FULL 
+GO
+ALTER DATABASE [ToDoList] SET  MULTI_USER 
+GO
+ALTER DATABASE [ToDoList] SET PAGE_VERIFY CHECKSUM  
+GO
+ALTER DATABASE [ToDoList] SET DB_CHAINING OFF 
+GO
+ALTER DATABASE [ToDoList] SET FILESTREAM( NON_TRANSACTED_ACCESS = OFF ) 
+GO
+ALTER DATABASE [ToDoList] SET TARGET_RECOVERY_TIME = 0 SECONDS 
+GO
+EXEC sys.sp_db_vardecimal_storage_format N'ToDoList', N'ON'
+GO
+USE [ToDoList]
+GO
+/****** Object:  Table [dbo].[tblEmployee]    Script Date: 25-Mar-20 1:16:26 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[tblEmployee](
+	[EmployeeID] [bigint] IDENTITY(1,1) NOT NULL,
+	[EmployeeName] [varchar](300) NOT NULL,
+	[CreatedOn] [smalldatetime] NOT NULL,
+ CONSTRAINT [PK_tblEmployee] PRIMARY KEY CLUSTERED 
+(
+	[EmployeeID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[tblLogin]    Script Date: 25-Mar-20 1:16:26 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[tblLogin](
+	[LoginID] [bigint] IDENTITY(1,1) NOT NULL,
+	[EmployeeID] [bigint] NOT NULL,
+	[UserName] [varchar](300) NOT NULL,
+	[Password] [varchar](300) NOT NULL,
+	[IsActive] [bit] NOT NULL,
+ CONSTRAINT [PK_tblLogin] PRIMARY KEY CLUSTERED 
+(
+	[LoginID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[tblTask]    Script Date: 25-Mar-20 1:16:26 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[tblTask](
+	[TaskID] [bigint] IDENTITY(1,1) NOT NULL,
+	[TaskName] [varchar](300) NOT NULL,
+	[TaskDescription] [varchar](max) NOT NULL,
+	[TaskDate] [smalldatetime] NULL,
+	[CreatedBy] [bigint] NULL,
+	[CreatedDate] [smalldatetime] NULL,
+	[ModifiedBy] [bigint] NULL,
+	[ModifiedDate] [smalldatetime] NULL,
+	[IsCompleted] [bit] NULL,
+ CONSTRAINT [PK_tbltask] PRIMARY KEY CLUSTERED 
+(
+	[TaskID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[tblLogin]  WITH CHECK ADD  CONSTRAINT [FK_tblLogin_tblEmployee] FOREIGN KEY([EmployeeID])
+REFERENCES [dbo].[tblEmployee] ([EmployeeID])
+GO
+ALTER TABLE [dbo].[tblLogin] CHECK CONSTRAINT [FK_tblLogin_tblEmployee]
+GO
+ALTER TABLE [dbo].[tblTask]  WITH CHECK ADD  CONSTRAINT [FK_tbltask_tblEmployee] FOREIGN KEY([CreatedBy])
+REFERENCES [dbo].[tblEmployee] ([EmployeeID])
+GO
+ALTER TABLE [dbo].[tblTask] CHECK CONSTRAINT [FK_tbltask_tblEmployee]
+GO
+ALTER TABLE [dbo].[tblTask]  WITH CHECK ADD  CONSTRAINT [FK_tbltask_tblEmployee1] FOREIGN KEY([ModifiedBy])
+REFERENCES [dbo].[tblEmployee] ([EmployeeID])
+GO
+ALTER TABLE [dbo].[tblTask] CHECK CONSTRAINT [FK_tbltask_tblEmployee1]
+GO
+/****** Object:  StoredProcedure [dbo].[spCheckLogin]    Script Date: 25-Mar-20 1:16:27 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE procedure [dbo].[spCheckLogin]
+	@LoginID varchar(200),
+	@Password varchar(200)
+AS
+
+BEGIN
+
+SELECT b.EmployeeName,A.* from tblLogin A left join tblEmployee B on A.EmployeeID=b.EmployeeID
+WHERE  UserName = @LoginID and Password=@Password and IsActive=1
+
+END
+GO
+/****** Object:  StoredProcedure [dbo].[spTaskDetailSel]    Script Date: 25-Mar-20 1:16:27 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE procedure [dbo].[spTaskDetailSel]
+	@LoginUserID bigint,
+	@TaskID bigint=0
+AS
+
+BEGIN
+
+SELECT TaskID,TaskName,convert(varchar, TaskDate,106)TaskDate,CreatedBy,convert(varchar,CreatedDate,106) CreatedDate,isnull(IsCompleted,0) IsCompleted from tblTask where CreatedBy=@LoginUserID and(@TaskID=0 OR TaskID=@TaskID)
+
+END
+GO
+USE [master]
+GO
+ALTER DATABASE [ToDoList] SET  READ_WRITE 
+GO
